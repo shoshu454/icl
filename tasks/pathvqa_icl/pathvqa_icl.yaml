@@ -1,0 +1,44 @@
+dataset_path: flaviagiammarino/path-vqa
+task: "pathvqa_icl"
+test_split: test
+output_type: generate_until
+process_docs: !function icl_utils.icl_process_docs
+doc_to_visual: !function icl_utils.icl_doc_to_visual
+doc_to_text: !function icl_utils.icl_doc_to_text
+doc_to_target: !function icl_utils.icl_doc_to_target
+generation_kwargs:
+  max_new_tokens: 64
+  temperature: 0.0
+  do_sample: false
+  num_beams: 1
+  until:
+    - "ASSISTANT:"
+    - "\nAnswer:"
+    - "\n<image>"
+metric_list:
+  - metric: pathvqa_exact_match
+    aggregation: mean
+    higher_is_better: true
+  - metric: pathvqa_f1
+    aggregation: mean
+    higher_is_better: true
+  - metric: pathvqa_bleu1
+    aggregation: mean
+    higher_is_better: true
+  - metric: pathvqa_bleu2
+    aggregation: mean
+    higher_is_better: true
+  - metric: pathvqa_bleu3
+    aggregation: mean
+    higher_is_better: true
+  - metric: pathvqa_binary_accuracy
+    aggregation: !function icl_utils.icl_aggregate_binary_accuracy
+    higher_is_better: true
+process_results: !function icl_utils.icl_process_results
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: "The following are example questions from the same task, paired with their answers. They may or may not be relevant to the question you need to answer — use them if helpful.\n Look at the medical image and answer the following question: "
+    post_prompt: "\nFor questions that can be answered with a yes or no, just answer yes or no. Otherwise, provide an answer in the medical domain."
+metadata:
+  version: 0.0
+  description: "PathVQA ICL: in-context-learning variant for memory/retrieval CL baselines"

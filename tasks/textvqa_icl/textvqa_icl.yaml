@@ -1,0 +1,36 @@
+# NOTE: dataset_path / dataset_name below MUST match _default_template_textvqa_yaml.
+# Confirm with: cat .../tasks/textvqa/_default_template_textvqa_yaml
+# If the template uses a different id, fix dataset_path here AND the default in
+# icl_utils._icl_cfg (or set ICL_DATASET_PATH / ICL_DATASET_NAME env vars).
+dataset_path: lmms-lab/textvqa
+task: "textvqa_icl"
+test_split: validation
+output_type: generate_until
+process_docs: !function icl_utils.icl_process_docs
+doc_to_visual: !function icl_utils.icl_doc_to_visual
+doc_to_text: !function icl_utils.icl_doc_to_text
+doc_to_target: !function icl_utils.icl_doc_to_target
+generation_kwargs:
+  max_new_tokens: 32
+  temperature: 0.0
+  do_sample: false
+  num_beams: 1
+  until:
+    - "ASSISTANT:"
+    - "\nAnswer:"
+    - "\n<image>"
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+process_results: !function icl_utils.icl_process_results
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: "The following are example questions from the same task, paired with their answers. They may or may not be relevant to the question you need to answer — use them if helpful.\n"
+    post_prompt: "\nAnswer the question using a single word or phrase."
+    ocr: false
+metadata:
+  version: 0.0
+  description: "TextVQA ICL: in-context-learning variant for memory/retrieval CL baselines"

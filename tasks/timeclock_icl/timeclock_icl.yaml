@@ -1,0 +1,29 @@
+dataset_path: AvaXiao/clockreading-time
+task: "timeclock_icl"
+test_split: train
+output_type: generate_until
+process_docs: !function icl_utils.icl_process_docs
+doc_to_visual: !function icl_utils.icl_doc_to_visual
+doc_to_text: !function icl_utils.icl_doc_to_text
+doc_to_target: !function icl_utils.icl_doc_to_target
+generation_kwargs:
+  max_new_tokens: 32
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+  until:
+    - "\nAnswer:"
+    - "\n<image>"
+process_results: !function icl_utils.icl_process_results
+metric_list:
+  - metric: hour_accuracy
+  - metric: minute_accuracy
+  - metric: both_accuracy
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: "The following are example questions from the same task, paired with their answers. They may or may not be relevant to the question you need to answer — use them if helpful.\n"
+    post_prompt: "\nAnswer with the time in HH:MM format. For example, if it's 3:45, output 3:45."
+metadata:
+  version: 0.0
+  description: "TimeClock ICL: in-context-learning variant for memory/retrieval CL baselines"

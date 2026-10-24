@@ -1,0 +1,24 @@
+dataset_path: Jessemel/cub200-test  # same dataset as the original cub200 task
+task: "cub200_icl"
+test_split: train
+output_type: generate_until
+process_docs: !function icl_utils.icl_process_docs
+doc_to_visual: !function icl_utils.icl_doc_to_visual
+doc_to_text: !function icl_utils.icl_doc_to_text
+doc_to_target: !function icl_utils.icl_doc_to_target
+generation_kwargs:
+  max_new_tokens: 16
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+process_results: !function icl_utils.icl_process_results
+metric_list:
+  - metric: acc
+    higher_is_better: true
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: "The following are example questions from the same task, paired with their answers. They may or may not be relevant to the question you need to answer — use them if helpful.\n"
+    post_prompt: "Answer with the option's letter from the given choices directly."
+metadata:
+  version: 0.0
